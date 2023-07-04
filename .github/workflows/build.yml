@@ -1,0 +1,70 @@
+name: CI
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install essential packages
+      run: |
+        if [ "${RUNNER_OS}" = 'Linux' ]; then
+            sudo apt-get install --assume-yes zsh
+        else
+            brew install zsh
+        fi
+    - name: Setup oh-my-zsh
+      run: |
+        sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+        sudo chsh -s /bin/zsh
+    - name: Run
+      env: 
+        SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
+        SSH_SERVER: ${{ secrets.SSH_SERVER }}
+        SSH_KEY: ${{ secrets.SSH_KEY }}
+        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
+      run: |
+        echo "${SSH_KEY}" > './id_rsa.b64'
+        
+        pwd
+        
+        if [ "${RUNNER_OS}" = 'Linux' ]; then
+            base64 -d './id_rsa.b64' > './id_rsa'
+        else
+            base64 --decode --input './id_rsa.b64' --output './id_rsa'
+        fi
+        
+        chmod 600 './id_rsa'
+        
+        ssh-keygen -A
+        
+        sudo mkdir '/var/run/sshd'
+        sudo chmod 0755 '/var/run/sshd'
+        
+        if [ "${RUNNER_OS}" = 'Linux' ]; then
+            echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd
+            echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd runner
+        else
+            sudo dscl . -passwd '/Users/root' "${SSH_PASSWORD}"
+        fi
+        
+        sudo /usr/sbin/sshd \
+            -o 'StrictModes=no' \
+            -o 'GatewayPorts=no' \
+            -o 'ListenAddress=127.0.0.1' \
+            -o 'Port=30000' \
+            -o 'PasswordAuthentication=yes' \
+            -o 'PermitRootLogin=yes' \
+            -o 'PermitEmptyPasswords=no'
+        
+        while true; do
+            ssh \
+                -C \
+                -N \
+                -q \
+                -o 'UserKnownHostsFile=/dev/null' \
+                -o 'StrictHostKeyChecking=no' \
+                -o 'ServerAliveInterval=5' \
+                -i './id_rsa' \
+                -R '127.0.0.1:30000:127.0.0.1:30000' \
+                "${SSH_USERNAME}@${SSH_SERVER}" || true
+        done
