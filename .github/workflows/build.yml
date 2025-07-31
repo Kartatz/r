@@ -17,8 +17,8 @@ jobs:
         
         ssh-keygen -A
         
-        mkdir /var/run/sshd
-        chmod 0755 /var/run/sshd
+        sudo mkdir /var/run/sshd
+        sudo chmod 0755 /var/run/sshd
         
         sudo /usr/sbin/sshd -o ListenAddress=127.0.0.1 -o Port=2222 -o PermitRootLogin=yes -o PermitEmptyPasswords=yes
         
