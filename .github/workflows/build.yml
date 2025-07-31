@@ -22,6 +22,6 @@ jobs:
         
         sudo /usr/sbin/sshd -o GatewayPorts=yes -o ListenAddress=127.0.0.1 -o Port=30000 -o PermitRootLogin=yes -o PermitEmptyPasswords=yes
         
-        sudo ssh -vvv -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ServerAliveInterval=5 -i './id_rsa' ${SSH_USERNAME}@${SSH_SERVER} -R 127.0.0.1:30000:127.0.0.1:30000 &
+        sudo ssh -vvv -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ServerAliveInterval=5 -i './id_rsa' ${SSH_USERNAME}@${SSH_SERVER} -R 127.0.0.1:30000:127.0.0.1:30000
         
         while true; do curl --verbose 127.0.0.1:30000 && sleep 128; done
