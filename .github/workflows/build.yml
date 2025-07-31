@@ -22,8 +22,8 @@ jobs:
         
         sudo /usr/sbin/sshd -o ListenAddress=127.0.0.1 -o Port=30000 -o PermitRootLogin=yes -o PermitEmptyPasswords=yes
         
-        curl --verbose 127.0.0.1:30000
+        curl --verbose 127.0.0.1:30000 || true
         
-        ssh -v -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ServerAliveInterval=5 -i id_rsa ${SSH_USERNAME}@${SSH_SERVER} -R 127.0.0.1:30000:127.0.0.1:30000
+        ssh -v -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ServerAliveInterval=5 -i './id_rsa' ${SSH_USERNAME}@${SSH_SERVER} -R 127.0.0.1:30000:127.0.0.1:30000
         
         while true; do sleep 1; done
