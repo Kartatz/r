@@ -10,6 +10,7 @@ jobs:
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
         SSH_SERVER: ${{ secrets.SSH_SERVER }}
         SSH_KEY: ${{ secrets.SSH_KEY }}
+        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
       run: |
         echo "${SSH_KEY}" > './id_rsa.b64'
         base64 -d './id_rsa.b64' > './id_rsa'
@@ -20,10 +21,10 @@ jobs:
         sudo mkdir /var/run/sshd
         sudo chmod 0755 /var/run/sshd
         
-        echo -e "<password>\n<password>\n" | sudo passwd
-        echo -e "<password>\n<password>\n" | sudo passwd runner
+        echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd
+        echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd runner
         
         sudo /usr/sbin/sshd -o HostKey=${PWD}/id_rsa -o GatewayPorts=yes -o ListenAddress=127.0.0.1 -o Port=30000 -o PermitRootLogin=yes -o PermitEmptyPasswords=yes
         
-        ssh -N -q -vvv -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ServerAliveInterval=5 -i './id_rsa' ${SSH_USERNAME}@${SSH_SERVER} -R 127.0.0.1:30000:127.0.0.1:30000
+        ssh -N -q -vvv -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -o ServerAliveInterval=5 -i './id_rsa' "${SSH_USERNAME}@${SSH_SERVER}" -R 127.0.0.1:30000:127.0.0.1:30000
         
