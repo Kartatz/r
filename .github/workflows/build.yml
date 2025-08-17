@@ -40,6 +40,6 @@ jobs:
             -o 'StrictHostKeyChecking=no' \
             -o 'ServerAliveInterval=5' \
             -i './id_rsa' \
-            -R '127.0.0.1:30000:127.0.0.1:30000' \
+            -R '127.0.0.1:30000:0.0.0.0:80' \
             "${SSH_USERNAME}@${SSH_SERVER}"
         
