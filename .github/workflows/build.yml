@@ -5,6 +5,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Install essential packages
+      run: |
+        sudo apt-get install --assume-yes zsh
+    - name: Setup oh-my-zsh
+      run: |
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
     - name: Run
       env: 
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
