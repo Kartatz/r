@@ -21,7 +21,8 @@ jobs:
       run: |
         echo "${SSH_KEY}" > './id_rsa.b64'
         pwd
-        if [ "${RUNNER_OS}" = 'Linux']; then
+        
+        if [ "${RUNNER_OS}" = 'Linux' ]; then
             base64 -d './id_rsa.b64' > './id_rsa'
         else
             base64 --decode --input './id_rsa.b64' --output './id_rsa'
@@ -34,8 +35,12 @@ jobs:
         sudo mkdir '/var/run/sshd'
         sudo chmod 0755 '/var/run/sshd'
         
-        echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd
-        echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd runner
+        if [ "${RUNNER_OS}" = 'Linux' ]; then
+            echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd
+            echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd runner
+        else
+            sudo dscl . -passwd /Users/runner "$SSH_PASSWORD"
+        fi
         
         sudo /usr/sbin/sshd \
             -o 'GatewayPorts=no' \
