@@ -7,11 +7,15 @@ jobs:
     - uses: actions/checkout@v2
     - name: Install essential packages
       run: |
-        #sudo apt-get install --assume-yes zsh
-        brew install zsh
+        if [ "${RUNNER_OS}" = 'Linux' ]; then
+            sudo apt-get install --assume-yes zsh
+        else
+            brew install zsh
+        fi
     - name: Setup oh-my-zsh
       run: |
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+        chsh -s /bin/zsh
     - name: Run
       env: 
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
@@ -20,6 +24,7 @@ jobs:
         SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
       run: |
         echo "${SSH_KEY}" > './id_rsa.b64'
+        
         pwd
         
         if [ "${RUNNER_OS}" = 'Linux' ]; then
@@ -39,7 +44,7 @@ jobs:
             echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd
             echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd runner
         else
-            sudo dscl . -passwd /Users/root "$SSH_PASSWORD"
+            sudo dscl . -passwd '/Users/root' "${SSH_PASSWORD}"
         fi
         
         sudo /usr/sbin/sshd \
