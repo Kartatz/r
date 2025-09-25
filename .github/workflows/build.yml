@@ -14,8 +14,8 @@ jobs:
         fi
     - name: Setup oh-my-zsh
       run: |
-        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-        chsh -s /bin/zsh
+        sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+        sudo chsh -s /bin/zsh
     - name: Run
       env: 
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
