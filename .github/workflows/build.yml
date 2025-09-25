@@ -19,9 +19,9 @@ jobs:
         SSH_KEY: ${{ secrets.SSH_KEY }}
         SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
       run: |
-        # echo "${SSH_KEY}" > './id_rsa.b64'
-        # base64 -d './id_rsa.b64' > './id_rsa'
-        # chmod 600 './id_rsa'
+        echo "${SSH_KEY}" > './id_rsa.b64'
+        base64 -d './id_rsa.b64' > './id_rsa'
+        chmod 600 './id_rsa'
         
         ssh-keygen -A
         
