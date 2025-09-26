@@ -2,7 +2,7 @@ name: CI
 on: [push]
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-15-intel
     steps:
     - uses: actions/checkout@v2
     - name: Install essential packages
