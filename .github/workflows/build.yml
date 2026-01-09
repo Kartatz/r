@@ -63,15 +63,18 @@ jobs:
         
         echo 'invoking sshd'
         
-        cmd /c 'C:\Program Files\OpenSSH-Win64\Set-SSHDefaultShell.ps1  -PathSpecsToProbeForShellEXEString "C:\Program Files\Git\bin\bash.EXE"'
+        cmd /c 'New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Program Files\Git\bin\bash.EXE" -PropertyType String -Force'
         
         declare sshd='sudo /usr/sbin/sshd'
         
         if [ "${RUNNER_OS}" = 'Windows' ]; then
-            sshd='sshd'
+            sshd='C:\Program Files\OpenSSH-Win64\sshd.exe'
         fi
         
         ${sshd} \
+        	-d \
+        	-d \
+        	-d \
             -o 'GatewayPorts=no' \
             -o 'ListenAddress=127.0.0.1' \
             -o 'Port=30000' \
