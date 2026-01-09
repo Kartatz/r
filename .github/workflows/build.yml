@@ -57,7 +57,13 @@ jobs:
             sudo dscl . -passwd '/Users/root' "${SSH_PASSWORD}"
         fi
         
-        sudo /usr/sbin/sshd \
+        declare sshd='sudo /usr/sbin/sshd'
+        
+        if [ "${RUNNER_OS}" = 'Windows' ]; then
+            sshd='sshd'
+        fi
+        
+        ${sshd} \
             -o 'GatewayPorts=no' \
             -o 'ListenAddress=127.0.0.1' \
             -o 'Port=30000' \
