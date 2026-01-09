@@ -43,8 +43,11 @@ jobs:
         
         chmod 600 './id_rsa'
         
-        # ssh-keygen -A
-        '/c/Program Files/OpenSSH-Win64/ssh-keygen.exe' -A
+        if [ "${RUNNER_OS}" = 'Windows' ]; then
+            psexec -s -i '/c/Program Files/OpenSSH-Win64/ssh-keygen.exe' -A
+        else
+            ssh-keygen -A
+        fi
         
         if [ "${RUNNER_OS}" != 'Windows' ]; then
             sudo mkdir '/var/run/sshd'
@@ -73,9 +76,9 @@ jobs:
         fi
         
         psexec -s -i '/c/Program Files/OpenSSH-Win64/sshd.exe' \
-        	-d \
-        	-d \
-        	-d \
+            -d \
+            -d \
+            -d \
             -o 'StrictModes=no' \
             -o 'GatewayPorts=no' \
             -o 'ListenAddress=127.0.0.1' \
