@@ -71,7 +71,7 @@ jobs:
             sshd='"/c/Program Files/OpenSSH-Win64/sshd.exe"'
         fi
         
-        psexec.exe -s -i '/c/Program Files/OpenSSH-Win64/sshd.exe' \
+        psexec -s -i '/c/Program Files/OpenSSH-Win64/sshd.exe' \
         	-d \
         	-d \
         	-d \
