@@ -54,7 +54,11 @@ jobs:
             echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd
             echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd runner
         elif [ "${RUNNER_OS}" = 'Windows' ]; then
-        	cmd /c "echo [System Access]>%TEMP%\secpol.cfg && echo PasswordComplexity = 0>>%TEMP%\secpol.cfg && secedit /configure /db %WINDIR%\Security\Database\secedit.sdb /cfg %TEMP%\secpol.cfg /areas SECURITYPOLICY"
+            cmd.exe /c "secedit /export /cfg C:\secpol.cfg"
+            sed -i 's/^PasswordComplexity = 1/PasswordComplexity = 0/' C:/secpol.cfg
+            sed -i 's/^MinimumPasswordLength = [0-9]*/MinimumPasswordLength = 0/' C:/secpol.cfg
+            cmd.exe /c "secedit /configure /db c:\windows\security\local.sdb /cfg C:\secpol.cfg /areas SECURITYPOLICY"
+            rm C:/secpol.cfg
             net user runneradmin "${SSH_PASSWORD}"
         else
             sudo dscl . -passwd '/Users/root' "${SSH_PASSWORD}"
