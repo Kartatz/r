@@ -77,7 +77,7 @@ jobs:
         
         net user sshd //add //active:no //expires:never
         
-        cmd /c 'net user sshd /add /comment:SSHD /fullname:sshd /active:no /expires:never'
+        cmd /c 'net user sshd /add /comment:SSHD /fullname:sshd /active:no /expires:never' || true
         psexec -s -i powershell -ExecutionPolicy Bypass -File "C:\Program Files\OpenSSH-Win64\install-sshd.ps1"
         
         psexec -s -i '/c/Program Files/OpenSSH-Win64/sshd.exe' \
