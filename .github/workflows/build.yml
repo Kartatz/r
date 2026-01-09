@@ -45,8 +45,10 @@ jobs:
         
         ssh-keygen -A
         
-        sudo mkdir '/var/run/sshd'
-        sudo chmod 0755 '/var/run/sshd'
+        if [ "${RUNNER_OS}" != 'Windows' ]; then
+            sudo mkdir '/var/run/sshd'
+            sudo chmod 0755 '/var/run/sshd'
+        fi
         
         if [ "${RUNNER_OS}" = 'Linux' ]; then
             echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd
