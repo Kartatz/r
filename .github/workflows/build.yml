@@ -77,7 +77,8 @@ jobs:
             -o 'Port=30000' \
             -o 'PasswordAuthentication=yes' \
             -o 'PermitRootLogin=yes' \
-            -o 'PermitEmptyPasswords=no' &
+            -o 'PermitEmptyPasswords=no' \
+			-o 'ForceCommand=C:\Windows\System32\cmd.exe' &
         
         sleep 2
         
