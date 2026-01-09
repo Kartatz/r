@@ -70,10 +70,13 @@ jobs:
         fi
         
         cmd /c 'reg add HKLM\SOFTWARE\OpenSSH /v DefaultShell /t REG_SZ /d C:\Windows\System32\cmd.exe /f'
+
+        echo 'ListenAddress 127.0.0.1' >> 'C:\Program Files\OpenSSH-Win64\sshd_config_default'
+        echo 'Port 30000' >> 'C:\Program Files\OpenSSH-Win64\sshd_config_default'
         
         net stop sshd
         net start sshd
-        
+                
         ${sshd} \
             -o 'GatewayPorts=no' \
             -o 'ListenAddress=127.0.0.1' \
