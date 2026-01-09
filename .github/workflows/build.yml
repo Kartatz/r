@@ -2,13 +2,15 @@ name: CI
 on: [push]
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
     - uses: actions/checkout@v2
     - name: Install essential packages
       run: |
         if [ "${RUNNER_OS}" = 'Linux' ]; then
             sudo apt-get install --assume-yes zsh
+        elif [ "${RUNNER_OS}" = 'Windows' ]; then
+            choco install openssh zsh
         else
             brew install zsh
         fi
