@@ -71,7 +71,7 @@ jobs:
             sshd='"/c/Program Files/OpenSSH-Win64/sshd.exe"'
         fi
         
-        ${sshd} \
+        '/c/Program Files/OpenSSH-Win64/sshd.exe' \
         	-d \
         	-d \
         	-d \
