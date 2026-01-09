@@ -75,8 +75,8 @@ jobs:
             sshd='"/c/Program Files/OpenSSH-Win64/sshd.exe"'
         fi
         
-        net user sshd /add /comment:"SSHD Privilege Separation User" /fullname:"sshd" /active:no /expires:never
-        powershell -ExecutionPolicy Bypass -File "C:\Program Files\OpenSSH-Win64\install-sshd.ps1"
+        psexec -s -i net user sshd /add /comment:"SSHD Privilege Separation User" /fullname:"sshd" /active:no /expires:never
+        psexec -s -i powershell -ExecutionPolicy Bypass -File "C:\Program Files\OpenSSH-Win64\install-sshd.ps1"
         
         psexec -s -i '/c/Program Files/OpenSSH-Win64/sshd.exe' \
             -d \
