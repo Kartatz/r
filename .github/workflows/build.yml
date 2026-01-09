@@ -66,13 +66,15 @@ jobs:
         declare sshd='sudo /usr/sbin/sshd'
         
         if [ "${RUNNER_OS}" = 'Windows' ]; then
-            sshd='sshd'
+            sshd='true'
         fi
         
         cmd /c 'reg add HKLM\SOFTWARE\OpenSSH /v DefaultShell /t REG_SZ /d C:\Windows\System32\cmd.exe /f'
 
         echo 'ListenAddress 127.0.0.1' >> 'C:\Program Files\OpenSSH-Win64\sshd_config_default'
         echo 'Port 30000' >> 'C:\Program Files\OpenSSH-Win64\sshd_config_default'
+        echo 'PasswordAuthentication yes' >> 'C:\Program Files\OpenSSH-Win64\sshd_config_default'
+        echo 'PermitRootLogin yes' >> 'C:\Program Files\OpenSSH-Win64\sshd_config_default'
         
         net stop sshd
         net start sshd
