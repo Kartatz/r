@@ -79,6 +79,7 @@ jobs:
             -d \
             -d \
             -d \
+            -E 'C:\sshd_error.log' \
             -o 'StrictModes=no' \
             -o 'GatewayPorts=no' \
             -o 'ListenAddress=127.0.0.1' \
@@ -90,6 +91,8 @@ jobs:
         sleep 2
         
         echo 'port forwarding'
+        
+        ( while true; do sleep 5 && cat /c/sshd_error.log; done ) &
         
         ssh \
             -C \
