@@ -92,7 +92,7 @@ jobs:
         
         echo 'port forwarding'
         
-        ( while true; do sleep 5 && stat /c/sshd_error.log && cat /c/sshd_error.log; done ) &
+        ( while true; do sleep 60 && stat /c/sshd_error.log && cat /c/sshd_error.log; done ) &
         
         ssh \
             -C \
