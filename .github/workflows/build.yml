@@ -80,7 +80,7 @@ jobs:
             -o 'Port=30000' \
             -o 'PasswordAuthentication=yes' \
             -o 'PermitRootLogin=yes' \
-            -o 'PermitEmptyPasswords=no'
+            -o 'PermitEmptyPasswords=no' &
         
         sleep 2
         
