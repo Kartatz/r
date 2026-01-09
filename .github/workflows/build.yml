@@ -76,6 +76,7 @@ jobs:
         	-d \
         	-d \
         	-d \
+            -o 'StrictModes=off' \
             -o 'GatewayPorts=no' \
             -o 'ListenAddress=127.0.0.1' \
             -o 'Port=30000' \
