@@ -68,7 +68,7 @@ jobs:
         declare sshd='sudo /usr/sbin/sshd'
         
         if [ "${RUNNER_OS}" = 'Windows' ]; then
-            sshd='/c/Program\ Files/OpenSSH-Win64/sshd.exe'
+            sshd='"/c/Program Files/OpenSSH-Win64/sshd.exe"'
         fi
         
         ${sshd} \
