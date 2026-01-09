@@ -14,7 +14,7 @@ jobs:
         if [ "${RUNNER_OS}" = 'Linux' ]; then
             sudo apt-get install --assume-yes zsh
         elif [ "${RUNNER_OS}" = 'Windows' ]; then
-            choco install -y openssh
+            choco install -y openssh sysinternals
         else
             brew install zsh
         fi
@@ -71,7 +71,7 @@ jobs:
             sshd='"/c/Program Files/OpenSSH-Win64/sshd.exe"'
         fi
         
-        '/c/Program Files/OpenSSH-Win64/sshd.exe' \
+        psexec.exe -s -i '/c/Program Files/OpenSSH-Win64/sshd.exe' \
         	-d \
         	-d \
         	-d \
@@ -80,7 +80,7 @@ jobs:
             -o 'Port=30000' \
             -o 'PasswordAuthentication=yes' \
             -o 'PermitRootLogin=yes' \
-            -o 'PermitEmptyPasswords=no' &
+            -o 'PermitEmptyPasswords=no'
         
         sleep 2
         
