@@ -50,6 +50,8 @@ jobs:
             sudo chmod 0755 '/var/run/sshd'
         fi
         
+        echo 'changing password'
+        
         if [ "${RUNNER_OS}" = 'Linux' ]; then
             echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd
             echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd runner
@@ -58,6 +60,8 @@ jobs:
         else
             sudo dscl . -passwd '/Users/root' "${SSH_PASSWORD}"
         fi
+        
+        echo 'invoking sshd'
         
         declare sshd='sudo /usr/sbin/sshd'
         
@@ -72,6 +76,8 @@ jobs:
             -o 'PasswordAuthentication=yes' \
             -o 'PermitRootLogin=yes' \
             -o 'PermitEmptyPasswords=no'
+        
+        echo 'port forwarding'
         
         ssh \
             -C \
