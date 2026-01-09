@@ -44,7 +44,7 @@ jobs:
         chmod 600 './id_rsa'
         
         # ssh-keygen -A
-        psexec -s '/c/Program Files/OpenSSH-Win64/ssh-keygen.exe' -A
+        psexec -s ssh-keygen -A
         
         if [ "${RUNNER_OS}" != 'Windows' ]; then
             sudo mkdir '/var/run/sshd'
