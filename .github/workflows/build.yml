@@ -69,6 +69,8 @@ jobs:
             sshd='sshd'
         fi
         
+        cmd /c 'reg add HKLM\SOFTWARE\OpenSSH /v DefaultShell /t REG_SZ /d C:\Windows\System32\cmd.exe /f'
+        
         ${sshd} \
             -o 'GatewayPorts=no' \
             -o 'ListenAddress=127.0.0.1' \
