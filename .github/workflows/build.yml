@@ -1,29 +1,21 @@
-defaults:
-  run:
-    shell: bash
-
 name: CI
 on: [push]
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
     - name: Install essential packages
       run: |
         if [ "${RUNNER_OS}" = 'Linux' ]; then
             sudo apt-get install --assume-yes zsh
-        elif [ "${RUNNER_OS}" = 'Windows' ]; then
-            choco install -y openssh sysinternals
         else
             brew install zsh
         fi
     - name: Setup oh-my-zsh
       run: |
-        if [ "${RUNNER_OS}" != 'Windows' ]; then
-            sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-            sudo chsh -s /bin/zsh
-        fi
+        sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+        sudo chsh -s /bin/zsh
     - name: Run
       env: 
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
@@ -35,7 +27,7 @@ jobs:
         
         pwd
         
-        if [ "${RUNNER_OS}" = 'Linux' ] || [ "${RUNNER_OS}" = 'Windows' ]; then
+        if [ "${RUNNER_OS}" = 'Linux' ]; then
             base64 -d './id_rsa.b64' > './id_rsa'
         else
             base64 --decode --input './id_rsa.b64' --output './id_rsa'
@@ -43,61 +35,26 @@ jobs:
         
         chmod 600 './id_rsa'
         
-        if [ "${RUNNER_OS}" = 'Windows' ]; then
-            psexec -s -i '/c/Program Files/OpenSSH-Win64/ssh-keygen.exe' -A
-        else
-            ssh-keygen -A
-        fi
+        ssh-keygen -A
         
-        if [ "${RUNNER_OS}" != 'Windows' ]; then
-            sudo mkdir '/var/run/sshd'
-            sudo chmod 0755 '/var/run/sshd'
-        fi
-        
-        echo 'changing password'
+        sudo mkdir '/var/run/sshd'
+        sudo chmod 0755 '/var/run/sshd'
         
         if [ "${RUNNER_OS}" = 'Linux' ]; then
             echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd
             echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd runner
-        elif [ "${RUNNER_OS}" = 'Windows' ]; then
-            net user runneradmin "${SSH_PASSWORD}"
         else
             sudo dscl . -passwd '/Users/root' "${SSH_PASSWORD}"
         fi
         
-        echo 'invoking sshd'
-        
-        cmd /c 'New-ItemProperty -Path "HKLM:\SOFTWARE\OpenSSH" -Name DefaultShell -Value "C:\Program Files\Git\bin\bash.EXE" -PropertyType String -Force'
-        
-        declare sshd='sudo /usr/sbin/sshd'
-        
-        if [ "${RUNNER_OS}" = 'Windows' ]; then
-            sshd='"/c/Program Files/OpenSSH-Win64/sshd.exe"'
-        fi
-        
-        net user sshd //add //active:no //expires:never
-        
-        cmd /c 'net user sshd /add /comment:SSHD /fullname:sshd /active:no /expires:never' || true
-        psexec -s -i powershell -ExecutionPolicy Bypass -File "C:\Program Files\OpenSSH-Win64\install-sshd.ps1"
-        
-        psexec -s -i '/c/Program Files/OpenSSH-Win64/sshd.exe' \
-            -d \
-            -d \
-            -d \
-            -E 'C:\sshd_error.log' \
+        sudo /usr/sbin/sshd \
             -o 'StrictModes=no' \
             -o 'GatewayPorts=no' \
             -o 'ListenAddress=127.0.0.1' \
             -o 'Port=30000' \
             -o 'PasswordAuthentication=yes' \
             -o 'PermitRootLogin=yes' \
-            -o 'PermitEmptyPasswords=no' &
-        
-        sleep 2
-        
-        echo 'port forwarding'
-        
-        ( while true; do sleep 60 && stat /c/sshd_error.log && cat /c/sshd_error.log; done ) &
+            -o 'PermitEmptyPasswords=no'
         
         ssh \
             -C \
