@@ -1,3 +1,7 @@
+defaults:
+  run:
+    shell: bash
+
 name: CI
 on: [push]
 jobs:
