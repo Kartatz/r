@@ -16,6 +16,10 @@ jobs:
       run: |
         sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
         sudo chsh -s /bin/zsh
+        echo 'ZSH_DISABLE_COMPFIX=true' | sudo tee '/etc/environment'
+    - name: Change screen settings
+      run: |
+        echo 'defscrollback 1000000' | sudo tee '/etc/screenrc'
     - name: Run
       env: 
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
