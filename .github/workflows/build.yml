@@ -16,7 +16,7 @@ jobs:
       run: |
         sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
         sudo chsh -s /bin/zsh
-        sed --in-place 's|local -aU insecure_dirs|return|g' '/root/.oh-my-zsh/lib/compfix.zsh'
+        sudo sed --in-place 's|local -aU insecure_dirs|return|g' '/root/.oh-my-zsh/lib/compfix.zsh'
     - name: Change screen settings
       run: |
         echo 'defscrollback 1000000' | sudo tee -a '/etc/screenrc'
