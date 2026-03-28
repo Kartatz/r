@@ -16,7 +16,7 @@ jobs:
       run: |
         sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
         sudo chsh -s /bin/zsh
-        echo 'ZSH_DISABLE_COMPFIX=true' | sudo tee -a '/etc/environment'
+        echo 'compaudit | xargs chmod g-w,o-w' | sudo tee -a '/root/.zshrc'
     - name: Change screen settings
       run: |
         echo 'defscrollback 1000000' | sudo tee -a '/etc/screenrc'
