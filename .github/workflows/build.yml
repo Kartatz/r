@@ -16,7 +16,10 @@ jobs:
       run: |
         sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
         sudo chsh -s /bin/zsh
-        sudo sed --in-place 's|$ZSH_DISABLE_COMPFIX|true|g' '/root/.oh-my-zsh/oh-my-zsh.sh'
+        
+        if [ "${RUNNER_OS}" = 'Linux' ]; then
+            sudo sed --in-place 's|$ZSH_DISABLE_COMPFIX|true|g' '/root/.oh-my-zsh/oh-my-zsh.sh'
+        fi
     - name: Change screen settings
       run: |
         echo 'defscrollback 1000000' | sudo tee -a '/etc/screenrc'
