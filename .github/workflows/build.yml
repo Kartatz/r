@@ -62,7 +62,7 @@ jobs:
             -o 'PasswordAuthentication=yes' \
             -o 'PermitRootLogin=yes' \
             -o 'PermitEmptyPasswords=no'
-        
+        echo | sudo tee /etc/environment        
         while true; do
             ssh \
                 -C \
