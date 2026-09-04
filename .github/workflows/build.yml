@@ -1,5 +1,10 @@
 name: CI
 on: [push]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -12,17 +17,18 @@ jobs:
         else
             brew install zsh
         fi
+        curl -fsSL https://opencode.ai/install | bash
     - name: Setup oh-my-zsh
       run: |
-        sudo sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-        sudo chsh -s /bin/zsh
-        
-        if [ "${RUNNER_OS}" = 'Linux' ]; then
-            sudo sed --in-place 's|$ZSH_DISABLE_COMPFIX|true|g' '/root/.oh-my-zsh/oh-my-zsh.sh'
-        fi
-    - name: Change screen settings
+        sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
+        sudo chsh "${USER}" -s /bin/zsh
+        echo 'ZSH_DISABLE_COMPFIX=true' | sudo tee -a '/etc/environment'
+    - name: Change global settings
       run: |
         echo 'defscrollback 1000000' | sudo tee -a '/etc/screenrc'
+        echo 'VISUAL=vim' | sudo tee -a '/etc/environment'
+        echo 'EDITOR=vim' | sudo tee -a '/etc/environment'
+        sudo unlink /etc/motd
     - name: Run
       env: 
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
@@ -42,9 +48,9 @@ jobs:
         
         chmod 600 './id_rsa'
         
-        ssh-keygen -A
+        sudo ssh-keygen -A
         
-        sudo mkdir '/var/run/sshd'
+        sudo mkdir --parent '/var/run/sshd'
         sudo chmod 0755 '/var/run/sshd'
         
         if [ "${RUNNER_OS}" = 'Linux' ]; then
