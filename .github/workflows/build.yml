@@ -28,7 +28,7 @@ jobs:
         echo 'defscrollback 1000000' | sudo tee -a '/etc/screenrc'
         echo 'VISUAL=vim' | sudo tee -a '/etc/environment'
         echo 'EDITOR=vim' | sudo tee -a '/etc/environment'
-        sudo unlink /etc/motd
+        sudo rm --force '/etc/motd'
     - name: Run
       env: 
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
