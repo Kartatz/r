@@ -38,9 +38,10 @@ jobs:
         sudo rm --force  '/etc/motd'
     - name: Setup vnc
       run: |
-        sudo apt-get install --update --assume-yes xfce4 xfce4-goodies tigervnc-standalone-server dbus-x11
+        sudo apt-get install -qq --update --assume-yes xfce4 xfce4-goodies tigervnc-standalone-server dbus-x11
         cp -r .vnc ~/
-        chmod -R 600 ~/.vnc
+        sudo chmod -R 600 ~/.vnc
+        sudo chown $USER:$USER ~/.vnc
         vncserver :1 &
     - name: Install extra packages
       shell: zsh {0}
