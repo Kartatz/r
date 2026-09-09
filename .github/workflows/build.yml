@@ -20,11 +20,13 @@ jobs:
         
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
         sudo chsh "${USER}" -s /bin/zsh
+        sudo rm --force '/etc/zsh/zshrc'
     - name: Change global settings
       run: |
         echo 'defscrollback 1000000' | sudo tee -a '/etc/screenrc'
         echo 'VISUAL=vim' | sudo tee -a '/etc/environment'
         echo 'EDITOR=vim' | sudo tee -a '/etc/environment'
+        echo 'ZSH_DISABLE_COMPFIX=true' | sudo tee -a '/etc/environment'
         sudo rm --force  '/etc/motd'
     - name: Install extra packages
       shell: zsh {0}
