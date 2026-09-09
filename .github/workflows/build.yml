@@ -20,7 +20,10 @@ jobs:
         
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
         sudo chsh "${USER}" -s /bin/zsh
+        
         sudo rm --force '/etc/zsh/zshrc'
+        
+        echo "path+=${HOME}/.opencode/bin" >> ~/.zshrc
     - name: Change global settings
       run: |
         echo 'defscrollback 1000000' | sudo tee -a '/etc/screenrc'
