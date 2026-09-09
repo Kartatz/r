@@ -25,6 +25,9 @@ jobs:
         
         echo "path+=${HOME}/.opencode/bin" >> ~/.zshrc
         echo "path+=${HOME}/.local/bin" >> ~/.zshrc
+        
+        echo "path+=${ANDROID_HOME}/cmdline-tools/latest/bin" >> ~/.zshrc
+        echo "path+=${ANDROID_HOME}/platform-tools" >> ~/.zshrc
     - name: Change global settings
       run: |
         echo 'defscrollback 1000000' | sudo tee -a '/etc/screenrc'
