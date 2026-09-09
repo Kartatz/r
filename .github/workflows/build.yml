@@ -27,7 +27,7 @@ jobs:
         echo 'EDITOR=vim' | sudo tee -a '/etc/environment'
         sudo rm --force  '/etc/motd'
     - name: Install extra packages
-      shell: zsh
+      shell: zsh {0}
       run: |
         curl -fsSL https://opencode.ai/install | bash
         echo '${{ secrets.OPENCODE_CONFIG }}' > ~/.config/opencode/opencode.jsonc
