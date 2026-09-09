@@ -13,9 +13,9 @@ jobs:
     - name: Setup oh-my-zsh
       run: |
         if [ "${RUNNER_OS}" = 'Linux' ]; then
-            sudo apt-get install --assume-yes zsh
+            sudo apt-get install --assume-yes zsh ripgrep
         else
-            brew install zsh
+            brew install zsh ripgrep
         fi
         
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
@@ -24,6 +24,7 @@ jobs:
         sudo rm --force '/etc/zsh/zshrc'
         
         echo "path+=${HOME}/.opencode/bin" >> ~/.zshrc
+        echo "path+=${HOME}/.local/bin" >> ~/.zshrc
     - name: Change global settings
       run: |
         echo 'defscrollback 1000000' | sudo tee -a '/etc/screenrc'
