@@ -40,7 +40,8 @@ jobs:
       run: |
         sudo apt-get install --update --assume-yes xfce4 xfce4-goodies tigervnc-standalone-server dbus-x11
         cp -r .vnc ~/
-        vncserver :1
+        chmod -R 600 ~/.vnc
+        vncserver :1 &
     - name: Install extra packages
       shell: zsh {0}
       run: |
