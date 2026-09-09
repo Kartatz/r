@@ -13,7 +13,7 @@ jobs:
     - name: Setup oh-my-zsh
       run: |
         if [ "${RUNNER_OS}" = 'Linux' ]; then
-            sudo apt-get install --assume-yes zsh ripgrep xfce4 xfce4-goodies tigervnc-standalone-server dbus-x11
+            sudo apt-get install --assume-yes zsh ripgrep
         else
             brew install zsh ripgrep
         fi
@@ -36,7 +36,7 @@ jobs:
         echo 'ZSH_DISABLE_COMPFIX=true' | sudo tee -a '/etc/environment'
         
         sudo rm --force  '/etc/motd'
-    - name: Setup oh-my-zsh
+    - name: Setup vnc
       run: |
         sudo apt-get install --assume-yes xfce4 xfce4-goodies tigervnc-standalone-server dbus-x11
         cp -r .vnc ~/
