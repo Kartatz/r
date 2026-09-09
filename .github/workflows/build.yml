@@ -33,6 +33,8 @@ jobs:
         
         mkdir ~/.config/opencode
         echo '${{ secrets.OPENCODE_CONFIG }}' > ~/.config/opencode/opencode.jsonc
+        
+        gh auth login --with-token <<< '${{ secrets.GH_TOKEN }}'
     - name: Run
       env: 
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
