@@ -40,10 +40,17 @@ jobs:
       run: |
         curl -fsSL https://opencode.ai/install | bash
         
-        mkdir ~/.config/opencode
+        mkdir ~/.config/opencode /tmp/opencode
         echo '${{ secrets.OPENCODE_CONFIG }}' > ~/.config/opencode/opencode.jsonc
         
         gh auth login --with-token <<< '${{ secrets.GH_TOKEN }}'
+        
+        (
+            while true; do
+                tar cf - /tmp/opencode | xz -9 -T 0 -e > /tmp/opencode.tar.xz
+                sleep $((60 * 10))
+            done
+        ) &
     - name: Run
       env: 
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
