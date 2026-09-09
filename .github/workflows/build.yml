@@ -13,7 +13,7 @@ jobs:
     - name: Setup oh-my-zsh
       run: |
         if [ "${RUNNER_OS}" = 'Linux' ]; then
-            sudo apt-get install --assume-yes zsh ripgrep
+            sudo apt-get install --update --assume-yes zsh ripgrep
         else
             brew install zsh ripgrep
         fi
@@ -38,7 +38,7 @@ jobs:
         sudo rm --force  '/etc/motd'
     - name: Setup vnc
       run: |
-        sudo apt-get install --assume-yes xfce4 xfce4-goodies tigervnc-standalone-server dbus-x11
+        sudo apt-get install --update --assume-yes xfce4 xfce4-goodies tigervnc-standalone-server dbus-x11
         cp -r .vnc ~/
         vncserver :1
     - name: Install extra packages
