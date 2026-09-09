@@ -7,28 +7,30 @@ concurrency:
 
 jobs:
   build:
-    runs-on: blacksmith-32vcpu-ubuntu-2404
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Install essential packages
+    - name: Setup oh-my-zsh
       run: |
         if [ "${RUNNER_OS}" = 'Linux' ]; then
             sudo apt-get install --assume-yes zsh
         else
             brew install zsh
         fi
-        curl -fsSL https://opencode.ai/install | bash
-    - name: Setup oh-my-zsh
-      run: |
+        
         sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
         sudo chsh "${USER}" -s /bin/zsh
-        echo 'ZSH_DISABLE_COMPFIX=true' | sudo tee -a '/etc/environment'
     - name: Change global settings
       run: |
         echo 'defscrollback 1000000' | sudo tee -a '/etc/screenrc'
         echo 'VISUAL=vim' | sudo tee -a '/etc/environment'
         echo 'EDITOR=vim' | sudo tee -a '/etc/environment'
-        sudo unlink /etc/motd
+        sudo unlink '/etc/motd'
+    - name: Install extra packages
+      shell: zsh
+      run: |
+        curl -fsSL https://opencode.ai/install | bash
+        echo '${{ secrets.OPENCODE_CONFIG }}' > ~/.config/opencode/opencode.jsonc
     - name: Run
       env: 
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
@@ -71,7 +73,6 @@ jobs:
                 
         while true; do
             ssh \
-                -C \
                 -N \
                 -q \
                 -o 'UserKnownHostsFile=/dev/null' \
