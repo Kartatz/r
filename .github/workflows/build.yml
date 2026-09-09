@@ -13,7 +13,7 @@ jobs:
     - name: Setup oh-my-zsh
       run: |
         if [ "${RUNNER_OS}" = 'Linux' ]; then
-            sudo apt-get install --assume-yes zsh ripgrep
+            sudo apt-get install --assume-yes zsh ripgrep xfce4 xfce4-goodies tigervnc-standalone-server dbus-x11
         else
             brew install zsh ripgrep
         fi
