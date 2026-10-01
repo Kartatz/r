@@ -53,7 +53,7 @@ jobs:
     - name: Install OpenCode
       shell: zsh {0}
       run: |
-        curl -fsSL https://opencode.ai/v2/install | bash
+        curl -fsSL https://opencode.ai/install | bash
         mkdir ~/.config/opencode
         echo '${{ secrets.OPENCODE_CONFIG }}' > ~/.config/opencode/opencode.jsonc
     - name: Set git credentials
