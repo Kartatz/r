@@ -19,7 +19,9 @@ jobs:
     - name: Install Python
       uses: actions/setup-python@main
       with:
-        python-version: '3.15-dev'
+        python-version: '3.16'
+        allow-prereleases: true
+        freethreaded: true
     - name: Install zsh
       run: |
         if [ "${RUNNER_OS}" = 'Linux' ]; then
