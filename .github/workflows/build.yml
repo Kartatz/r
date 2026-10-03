@@ -63,6 +63,7 @@ jobs:
         
         git config --global user.email "105828205+Kartatz@users.noreply.github.com"
         git config --global user.name "Kartatz"
+        git config --global pull.rebase true
     - name: Run
       env: 
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
