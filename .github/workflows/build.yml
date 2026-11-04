@@ -8,26 +8,6 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-26.04
-    strategy:
-      matrix:
-        target: [
-          '30001',
-          '30002',
-          '30003',
-          '30004',
-          '30005',
-          '30006',
-          '30007',
-          '30008',
-          '30009',
-          '30010',
-          '30011',
-          '30012',
-          '30013',
-          '30014',
-          '30015',
-          '30016'
-        ]
     steps:
     - uses: actions/checkout@main
     - name: Install Unbound
@@ -73,7 +53,7 @@ jobs:
     - name: Install OpenCode
       shell: zsh {0}
       run: |
-        curl -fsSL https://opencode.ai/install | bash
+        curl -fsSL https://opencode.ai/v2/install | bash
         mkdir ~/.config/opencode
         echo '${{ secrets.OPENCODE_CONFIG }}' > ~/.config/opencode/opencode.jsonc
     - name: Set git credentials
@@ -134,7 +114,7 @@ jobs:
                 -o 'StrictHostKeyChecking=no' \
                 -o 'ServerAliveInterval=5' \
                 -i './id_rsa' \
-                -R '127.0.0.1:${{ matrix.target }}:127.0.0.1:30000' \
+                -R '0.0.0.0:47080:127.0.0.1:30000' \
                 "${SSH_USERNAME}@${SSH_SERVER}" || true
         done
 
