@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@main
     - name: Free up some space
       run: |
-        curl 'https://raw.githubusercontent.com/AmanoTeam/gha-free-space/refs/heads/master/main.sh' -sSf | sed -E '/(docker|containerd)/d' | bash
+        ( curl 'https://raw.githubusercontent.com/AmanoTeam/gha-free-space/refs/heads/master/main.sh' -sSf | sed -E '/(docker|containerd)/d' | bash ) > '/tmp/free-space.log' 2>&1 &
     - name: Start Arch Linux container
       run: |
         sudo docker run \
