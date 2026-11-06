@@ -27,7 +27,7 @@ jobs:
       run: |
         sudo docker exec archlinux pacman --sync --refresh --noconfirm unbound
         sudo docker cp "${PWD}/unbound.conf" archlinux:/etc/unbound/unbound.conf
-        sudo docker exec --detach archlinux unbound
+        sudo docker exec archlinux systemctl enable --now unbound.service
         echo 'nameserver 127.0.0.1' | sudo docker exec --interactive archlinux tee '/etc/resolv.conf'
     - name: Install Python
       run: |
