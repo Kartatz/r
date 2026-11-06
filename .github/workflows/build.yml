@@ -39,8 +39,6 @@ jobs:
         echo 'james ALL=(ALL:ALL) NOPASSWD: ALL' | sudo docker exec --interactive archlinux tee '/etc/sudoers.d/james'
         sudo docker exec archlinux chmod 0440 '/etc/sudoers.d/james'
         sudo docker exec archlinux visudo --check --file '/etc/sudoers.d/james'
-        
-        sudo docker exec archlinux systemctl start tor.service
     - name: Install zsh
       run: |
         sudo docker exec archlinux pacman --sync --refresh --noconfirm zsh
@@ -76,6 +74,9 @@ jobs:
         sudo docker exec --user james archlinux git config --global user.email "105828205+Kartatz@users.noreply.github.com"
         sudo docker exec --user james archlinux git config --global user.name "Kartatz"
         sudo docker exec --user james archlinux git config --global pull.rebase true
+    - name: Start services
+      run: |
+        sudo docker exec archlinux systemctl start tor.service
     - name: Run
       env:
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
