@@ -33,6 +33,9 @@ jobs:
     - name: Install Python
       run: |
         sudo docker exec archlinux pacman --sync --refresh --noconfirm python python-pip
+    - name: Install extra packages
+      run: |
+        sudo docker exec archlinux pacman --sync --refresh --noconfirm ripgrep git curl screen vim base-devel cmake gdb dejagnu jdk25-openjdk jq jadx tor torsocks wine-staging clang lld sudo aria2
     - name: Install zsh
       run: |
         sudo docker exec archlinux pacman --sync --refresh --noconfirm zsh
@@ -45,9 +48,6 @@ jobs:
         
         sudo docker exec --user james --workdir '/home/james' archlinux bash -c 'echo "path+=${HOME}/.opencode/bin" >> ~/.zshrc'
         sudo docker exec --user james --workdir '/home/james' archlinux bash -c 'echo "path+=${HOME}/.local/bin" >> ~/.zshrc'
-    - name: Install extra packages
-      run: |
-        sudo docker exec archlinux pacman --sync --refresh --noconfirm ripgrep git curl screen vim base-devel cmake gdb dejagnu jdk25-openjdk jq jadx tor torsocks wine-staging clang lld sudo aria2
     - name: Change global settings
       run: |
         echo 'defscrollback 1000000' | sudo docker exec --interactive archlinux tee --append '/etc/screenrc'
