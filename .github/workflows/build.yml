@@ -90,7 +90,7 @@ jobs:
             tar --directory="$(dirname "${KAD_TARBALL}")" --extract --file="${KAD_TARBALL}"
         '
         
-        sudo docker exec --detach archlinux /tmp/kad
+        sudo docker exec --detach archlinux /tmp/kad/bin/kad --port=4000 --target=chrome160 --platform=windows
     - name: Free up some space
       run: |
         dpkg-query -W -f '${Package}\n' | grep -E '^(docker|containerd)' | xargs -r sudo apt-mark manual
