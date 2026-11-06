@@ -83,23 +83,29 @@ jobs:
         
         chmod 600 './id_rsa'
         
-        sudo ssh-keygen -A
+        sudo docker run \
+            --detach \
+            --init \
+            --privileged \
+            --name 'archlinux' \
+            --publish '127.0.0.1:30000:22/tcp' \
+            archlinux:latest \
+            sleep infinity
         
-        sudo mkdir --parent '/var/run/sshd'
-        sudo chmod 0755 '/var/run/sshd'
+        sudo docker exec archlinux pacman --sync --refresh --sysupgrade --noconfirm openssh
         
-        if [ "${RUNNER_OS}" = 'Linux' ]; then
-            echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd
-            echo -e "${SSH_PASSWORD}\n${SSH_PASSWORD}\n" | sudo passwd runner
-        else
-            sudo dscl . -passwd '/Users/root' "${SSH_PASSWORD}"
-        fi
+        sudo docker exec archlinux ssh-keygen -A
         
-        sudo /usr/sbin/sshd \
+        sudo docker exec archlinux useradd --create-home --shell '/bin/bash' runner
+        
+        echo "root:${SSH_PASSWORD}" | sudo docker exec --interactive archlinux chpasswd
+        echo "runner:${SSH_PASSWORD}" | sudo docker exec --interactive archlinux chpasswd
+        
+        sudo docker exec archlinux /usr/bin/sshd \
             -o 'StrictModes=no' \
             -o 'GatewayPorts=no' \
-            -o 'ListenAddress=127.0.0.1' \
-            -o 'Port=30000' \
+            -o 'ListenAddress=0.0.0.0' \
+            -o 'Port=22' \
             -o 'PasswordAuthentication=yes' \
             -o 'PermitRootLogin=yes' \
             -o 'PermitEmptyPasswords=no' \
