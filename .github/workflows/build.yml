@@ -23,31 +23,31 @@ jobs:
         
         sudo docker exec archlinux pacman --sync --refresh --sysupgrade --noconfirm
         
-        sudo docker exec archlinux useradd --create-home --shell '/bin/bash' runner
+        sudo docker exec archlinux useradd --create-home --shell '/bin/bash' james
     - name: Install Unbound
       run: |
         sudo docker exec archlinux pacman --sync --refresh --noconfirm unbound
-        
         sudo docker cp "${PWD}/unbound.conf" archlinux:/etc/unbound/unbound.conf
-        
         sudo docker exec --detach archlinux unbound
-        
         echo 'nameserver 127.0.0.1' | sudo docker exec --interactive archlinux tee '/etc/resolv.conf'
     - name: Install Python
       run: |
         sudo docker exec archlinux pacman --sync --refresh --noconfirm python python-pip
     - name: Install zsh
       run: |
-        sudo docker exec archlinux pacman --sync --refresh --noconfirm zsh ripgrep git curl screen vim
+        sudo docker exec archlinux pacman --sync --refresh --noconfirm zsh
         
-        sudo docker exec --user runner --workdir '/home/runner' archlinux bash -c 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended'
+        sudo docker exec --user james --workdir '/home/james' archlinux bash -c 'sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended'
         
-        sudo docker exec archlinux usermod --shell '/bin/zsh' runner
+        sudo docker exec archlinux usermod --shell '/bin/zsh' james
         
         sudo docker exec archlinux rm --force '/etc/zsh/zshrc'
         
-        sudo docker exec --user runner --workdir '/home/runner' archlinux bash -c 'echo "path+=${HOME}/.opencode/bin" >> ~/.zshrc'
-        sudo docker exec --user runner --workdir '/home/runner' archlinux bash -c 'echo "path+=${HOME}/.local/bin" >> ~/.zshrc'
+        sudo docker exec --user james --workdir '/home/james' archlinux bash -c 'echo "path+=${HOME}/.opencode/bin" >> ~/.zshrc'
+        sudo docker exec --user james --workdir '/home/james' archlinux bash -c 'echo "path+=${HOME}/.local/bin" >> ~/.zshrc'
+    - name: Install extra packages
+      run: |
+        sudo docker exec archlinux pacman --sync --refresh --noconfirm ripgrep git curl screen vim base-devel cmake gdb dejagnu jdk25-openjdk jq jadx tor torsocks wine-staging clang lld sudo aria2
     - name: Change global settings
       run: |
         echo 'defscrollback 1000000' | sudo docker exec --interactive archlinux tee --append '/etc/screenrc'
@@ -55,24 +55,22 @@ jobs:
         echo 'EDITOR=vim' | sudo docker exec --interactive archlinux tee --append '/etc/environment'
         echo 'LC_ALL=C.UTF-8' | sudo docker exec --interactive archlinux tee --append '/etc/environment'
         echo 'ZSH_DISABLE_COMPFIX=true' | sudo docker exec --interactive archlinux tee --append '/etc/environment'
-        echo "JAVA_HOME=${JAVA_HOME_21_X64}" | sudo docker exec --interactive archlinux tee --append '/etc/environment'
         
         sudo docker exec archlinux rm --force '/etc/motd'
     - name: Install OpenCode
       run: |
-        curl -fsSL https://opencode.ai/v2/install | sudo docker exec --interactive --user runner archlinux bash
-        
-        printf '%s\n' '${{ secrets.OPENCODE_CONFIG }}' | sudo docker exec --interactive --user runner archlinux bash -c 'mkdir -p "$HOME/.config/opencode"; cat > "$HOME/.config/opencode/opencode.jsonc"'
+        curl -fsSL https://opencode.ai/install | sudo docker exec --interactive --user james archlinux bash
+        printf '%s\n' '${{ secrets.OPENCODE_CONFIG }}' | sudo docker exec --interactive --user james archlinux bash -c 'mkdir -p "$HOME/.config/opencode"; cat > "$HOME/.config/opencode/opencode.jsonc"'
     - name: Set git credentials
       run: |
         sudo docker exec archlinux pacman --sync --refresh --noconfirm github-cli
         
-        printf '%s\n' '${{ secrets.GH_TOKEN }}' | sudo docker exec --interactive --user runner archlinux gh auth login --with-token
-        sudo docker exec --user runner archlinux gh auth setup-git
+        printf '%s\n' '${{ secrets.GH_TOKEN }}' | sudo docker exec --interactive --user james archlinux gh auth login --with-token
+        sudo docker exec --user james archlinux gh auth setup-git
         
-        sudo docker exec --user runner archlinux git config --global user.email "105828205+Kartatz@users.noreply.github.com"
-        sudo docker exec --user runner archlinux git config --global user.name "Kartatz"
-        sudo docker exec --user runner archlinux git config --global pull.rebase true
+        sudo docker exec --user james archlinux git config --global user.email "105828205+Kartatz@users.noreply.github.com"
+        sudo docker exec --user james archlinux git config --global user.name "Kartatz"
+        sudo docker exec --user james archlinux git config --global pull.rebase true
     - name: Run
       env:
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
@@ -89,11 +87,10 @@ jobs:
         chmod 600 './id_rsa'
         
         sudo docker exec archlinux pacman --sync --noconfirm openssh
-        
         sudo docker exec archlinux ssh-keygen -A
         
         echo "root:${SSH_PASSWORD}" | sudo docker exec --interactive archlinux chpasswd
-        echo "runner:${SSH_PASSWORD}" | sudo docker exec --interactive archlinux chpasswd
+        echo "james:${SSH_PASSWORD}" | sudo docker exec --interactive archlinux chpasswd
         
         sudo docker exec archlinux /usr/bin/sshd \
             -o 'StrictModes=no' \
