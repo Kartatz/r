@@ -17,7 +17,6 @@ jobs:
             --init \
             --privileged \
             --name 'archlinux' \
-            --volume "${PWD}:${PWD}" \
             --publish '127.0.0.1:30000:22/tcp' \
             archlinux:latest \
             sleep infinity
@@ -29,7 +28,7 @@ jobs:
       run: |
         sudo docker exec archlinux pacman --sync --refresh --noconfirm unbound
         
-        sudo docker exec archlinux cp "${PWD}/unbound.conf" '/etc/unbound/unbound.conf'
+        sudo docker cp "${PWD}/unbound.conf" archlinux:/etc/unbound/unbound.conf
         
         sudo docker exec --detach archlinux unbound
         
