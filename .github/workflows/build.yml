@@ -75,8 +75,11 @@ jobs:
         sudo docker exec --user james archlinux git config --global user.name "Kartatz"
         sudo docker exec --user james archlinux git config --global pull.rebase true
     - name: Start services
-      run: |
+
         sudo docker exec archlinux systemctl start tor.service
+    - name: Free up some space
+      run: |
+        ( curl 'https://raw.githubusercontent.com/AmanoTeam/gha-free-space/refs/heads/master/main.sh' -sSf | sed /docker/d | bash ) &
     - name: Run
       env:
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
