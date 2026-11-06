@@ -79,6 +79,18 @@ jobs:
     - name: Start services
       run: |
         sudo docker exec archlinux systemctl start tor.service
+    - name: Install Kad
+      run: |
+        sudo docker exec archlinux bash -c '
+            declare -r KAD_TAG="v0.3"
+            declare -r KAD_TARBALL="/tmp/kad.tar.xz"
+            declare -r KAD_URL="https://github.com/AmanoTeam/Kad/releases/download/${KAD_TAG}/x86_64-unknown-linux-gnu.tar.xz"
+            
+            curl --connect-timeout "10" --retry "15" --retry-all-errors --fail --silent --location --url "${KAD_URL}" --output "${KAD_TARBALL}"
+            tar --directory="$(dirname "${KAD_TARBALL}")" --extract --file="${KAD_TARBALL}"
+        '
+        
+        sudo docker exec --detach archlinux /tmp/kad
     - name: Free up some space
       run: |
         dpkg-query -W -f '${Package}\n' | grep -E '^(docker|containerd)' | xargs -r sudo apt-mark manual
