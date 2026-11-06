@@ -64,6 +64,8 @@ jobs:
       run: |
         curl -fsSL https://opencode.ai/install | sudo docker exec --interactive --user james archlinux bash
         printf '%s\n' '${{ secrets.OPENCODE_CONFIG }}' | sudo docker exec --interactive --user james archlinux bash -c 'mkdir -p "$HOME/.config/opencode"; cat > "$HOME/.config/opencode/opencode.jsonc"'
+        sudo docker cp "${PWD}/AGENTS.md" archlinux:/home/james/.config/opencode/AGENTS.md
+        sudo docker exec archlinux chown james: '/home/james/.config/opencode/AGENTS.md'
     - name: Set git credentials
       run: |
         sudo docker exec archlinux pacman --sync --refresh --noconfirm github-cli
