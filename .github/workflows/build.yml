@@ -14,12 +14,11 @@ jobs:
       run: |
         sudo docker run \
             --detach \
-            --init \
             --privileged \
             --name 'archlinux' \
             --publish '127.0.0.1:30000:22/tcp' \
             archlinux:latest \
-            sleep infinity
+            /sbin/init
         
         sudo docker exec archlinux pacman --sync --refresh --sysupgrade --noconfirm
         
@@ -40,6 +39,8 @@ jobs:
         echo 'james ALL=(ALL:ALL) NOPASSWD: ALL' | sudo docker exec --interactive archlinux tee '/etc/sudoers.d/james'
         sudo docker exec archlinux chmod 0440 '/etc/sudoers.d/james'
         sudo docker exec archlinux visudo --check --file '/etc/sudoers.d/james'
+        
+        sudo docker exec archlinux systemctl start tor.service
     - name: Install zsh
       run: |
         sudo docker exec archlinux pacman --sync --refresh --noconfirm zsh
