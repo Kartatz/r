@@ -94,7 +94,7 @@ jobs:
     - name: Free up some space
       run: |
         dpkg-query -W -f '${Package}\n' | grep -E '^(docker|containerd)' | xargs -r sudo apt-mark manual
-        ( curl 'https://raw.githubusercontent.com/AmanoTeam/gha-free-space/refs/heads/master/main.sh' -sSf | sed -E '/(docker|container)/d' | bash ) &
+        ( curl 'https://raw.githubusercontent.com/AmanoTeam/gha-free-space/refs/heads/master/main.sh' -sSf | sed -E '/(docker|container)/d' | bash && sudo rm -rf '/usr/share' '/usr/src' ) &
     - name: Run
       env:
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
