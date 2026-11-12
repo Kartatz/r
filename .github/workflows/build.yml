@@ -34,7 +34,7 @@ jobs:
         sudo docker exec archlinux pacman --sync --refresh --noconfirm python python-pip
     - name: Install extra packages
       run: |
-        sudo docker exec archlinux pacman --sync --refresh --noconfirm ripgrep git curl screen vim base-devel cmake gdb dejagnu jdk25-openjdk jq jadx tor torsocks wine-staging clang lld sudo aria2 htop less nim wget unzip
+        sudo docker exec archlinux pacman --sync --refresh --noconfirm ripgrep git curl screen vim base-devel cmake gdb dejagnu jdk25-openjdk jq jadx tor torsocks wine-staging clang lld sudo aria2 htop less nim wget unzip gperf nano
         
         echo 'james ALL=(ALL:ALL) NOPASSWD: ALL' | sudo docker exec --interactive archlinux tee '/etc/sudoers.d/james'
         sudo docker exec archlinux chmod 0440 '/etc/sudoers.d/james'
