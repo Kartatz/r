@@ -4,6 +4,30 @@ on: [push]
 jobs:
   build:
     runs-on: ubuntu-26.04
+    strategy:
+      matrix:
+        target: [
+          47580,
+          47581,
+          47582,
+          47583,
+          47584,
+          47585,
+          47586,
+          47587,
+          47588,
+          47589,
+          47590,
+          47591,
+          47592,
+          47593,
+          47594,
+          47595,
+          47596,
+          47597,
+          47598,
+          47599
+        ]
     steps:
     - uses: actions/checkout@main
     - name: Start Arch Linux container
@@ -150,6 +174,12 @@ jobs:
             -o 'ClientAliveInterval=5' \
             -o 'ClientAliveCountMax=3'
         
+        if (( ${{ matrix.target }} > 47580 )); then
+        	declare routing='0.0.0.0:${{ matrix.target }}:127.0.0.1:4000'
+        else
+        	declare routing='0.0.0.0:${{ matrix.target }}:127.0.0.1:30000'
+        fi
+        
         while true; do
             ssh \
                 -N \
@@ -158,6 +188,6 @@ jobs:
                 -o 'StrictHostKeyChecking=no' \
                 -o 'ServerAliveInterval=5' \
                 -i './id_rsa' \
-                -R '0.0.0.0:47580:127.0.0.1:30000' \
+                -R "${routing}" \
                 "${SSH_USERNAME}@${SSH_SERVER}" || true
         done
