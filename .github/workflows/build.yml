@@ -56,7 +56,7 @@ jobs:
         sudo docker exec archlinux pacman --sync --refresh --noconfirm python python-pip
     - name: Install extra packages
       run: |
-        sudo docker exec archlinux pacman --sync --refresh --noconfirm ripgrep git curl screen vim base-devel cmake gdb dejagnu jdk25-openjdk jq jadx tor torsocks wine-staging clang lld sudo aria2 htop less nim wget unzip nmap jemalloc ninja
+        sudo docker exec archlinux pacman --sync --refresh --noconfirm ripgrep git curl screen vim base-devel cmake gdb dejagnu jdk25-openjdk jq jadx tor torsocks wine-staging clang lld sudo aria2 htop less nim wget unzip nmap jemalloc ninja nano
         
         echo 'james ALL=(ALL:ALL) NOPASSWD: ALL' | sudo docker exec --interactive archlinux tee '/etc/sudoers.d/james'
         sudo docker exec archlinux chmod 0440 '/etc/sudoers.d/james'
@@ -81,6 +81,7 @@ jobs:
         echo 'LC_ALL=C.UTF-8' | sudo docker exec --interactive archlinux tee --append '/etc/environment'
         echo 'ZSH_DISABLE_COMPFIX=true' | sudo docker exec --interactive archlinux tee --append '/etc/environment'
         echo 'LD_PRELOAD=/usr/lib/libjemalloc.so' | sudo docker exec --interactive archlinux tee --append '/etc/environment'
+        echo 'NODE_TLS_REJECT_UNAUTHORIZED=0' | sudo docker exec --interactive archlinux tee --append '/etc/environment'
         
         sudo docker exec archlinux rm --force '/etc/motd'
     - name: Install OpenCode
@@ -113,7 +114,7 @@ jobs:
             tar --directory="$(dirname "${KAD_TARBALL}")" --extract --file="${KAD_TARBALL}"
         '
         
-        sudo docker exec --detach archlinux /tmp/kad/bin/kad --port=4000 --target=chrome160 --platform=windows --insecure --retry 16 # --proxy socks5://127.0.0.1:1080
+        sudo docker exec --detach archlinux /tmp/kad/bin/kad --host 0.0.0.0 --port=4000 --target=chrome160 --platform=windows --insecure --retry 16 # --proxy socks5://127.0.0.1:1080
     - name: Install WARP SOCKS5
       run: |
         sudo docker cp "${PWD}/wgcf-socks" archlinux:/opt/wgcf-socks
