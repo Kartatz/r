@@ -14,7 +14,7 @@ jobs:
             --name 'archlinux' \
             --publish '127.0.0.1:30000:22/tcp' \
             --publish '127.0.0.1:1080:1080/tcp' \
-            cachyos/cachyos-v4 \
+            archlinux:latest \
             /sbin/init
         
         sudo docker exec archlinux pacman --sync --refresh --sysupgrade --noconfirm
