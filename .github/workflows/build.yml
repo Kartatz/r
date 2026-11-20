@@ -149,7 +149,7 @@ jobs:
             -o 'PermitEmptyPasswords=no' \
             -o 'ClientAliveInterval=5' \
             -o 'ClientAliveCountMax=3'
-        
+        sudo apt install ncat
         while true; do
             ssh \
                 -N \
