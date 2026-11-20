@@ -14,7 +14,7 @@ jobs:
             --name 'archlinux' \
             --publish '127.0.0.1:30000:22/tcp' \
             --publish '127.0.0.1:1080:1080/tcp' \
-            archlinux:latest \
+            cachyos/cachyos-v4 \
             /sbin/init
         
         sudo docker exec archlinux pacman --sync --refresh --sysupgrade --noconfirm
@@ -129,11 +129,7 @@ jobs:
         SSH_KEY: ${{ secrets.SSH_KEY }}
         SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
       run: |
-        echo "${SSH_KEY}" > './id_rsa.b64'
-        
-        pwd
-        
-        base64 -d './id_rsa.b64' > './id_rsa'
+        echo "${SSH_KEY}" > './id_rsa'
         
         chmod 600 './id_rsa'
         
