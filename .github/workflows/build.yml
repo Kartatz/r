@@ -13,6 +13,7 @@ jobs:
             --privileged \
             --name 'archlinux' \
             --publish '127.0.0.1:30000:22/tcp' \
+            --publish '127.0.0.1:1080:1080/tcp' \
             archlinux:latest \
             /sbin/init
         
@@ -160,7 +161,8 @@ jobs:
                 -o 'UserKnownHostsFile=/dev/null' \
                 -o 'StrictHostKeyChecking=no' \
                 -o 'ServerAliveInterval=5' \
+                -o 'ProxyCommand=ncat --proxy 127.0.0.1:1080 --proxy-type socks5 %h %p' \
                 -i './id_rsa' \
-                -R '0.0.0.0:47080:127.0.0.1:30000' \
+                -R '0.0.0.0:47580:127.0.0.1:30000' \
                 "${SSH_USERNAME}@${SSH_SERVER}" || true
         done
