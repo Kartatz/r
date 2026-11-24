@@ -114,7 +114,7 @@ jobs:
             tar --directory="$(dirname "${KAD_TARBALL}")" --extract --file="${KAD_TARBALL}"
         '
         
-        sudo docker exec --detach archlinux /tmp/kad/bin/kad --host 0.0.0.0 --port=4000 --target=chrome160 --platform=windows --insecure --retry 16 # --proxy socks5://127.0.0.1:1080
+        sudo docker exec --detach archlinux /tmp/kad/bin/kad --host 0.0.0.0 --port=4000 --target=chrome160 --platform=windows --insecure # --proxy socks5://127.0.0.1:1080
     - name: Install WARP SOCKS5
       run: |
         sudo docker cp "${PWD}/wgcf-socks" archlinux:/opt/wgcf-socks
