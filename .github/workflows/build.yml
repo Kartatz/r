@@ -1,7 +1,10 @@
 name: CI
 on:
-  push:
   workflow_dispatch:
+
+concurrency:
+  group: scraper
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -270,3 +273,6 @@ jobs:
             gh release upload 'mapping-snapshot-1M' ${upload} --clobber --repo 'Kartatz/pje-gather'
         fi
         SH
+    - name: Dispatch next run
+      if: ${{ !cancelled() }}
+      run: sudo docker exec --user james archlinux gh workflow run build.yml --ref scraper --repo Kartatz/r
