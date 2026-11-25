@@ -178,7 +178,7 @@ jobs:
         declare code
         
         for attempt in 1 2 3; do
-            code="$(sudo docker exec archlinux curl --silent --show-error --max-time 15 --proxy 'http://127.0.0.1:4000' --output /dev/null --write-out '%{http_code}' 'https://pje.cloud.tjpe.jus.br/' || true)"
+            code="$(sudo docker exec archlinux curl --silent --show-error --insecure --max-time 15 --proxy 'http://127.0.0.1:4000' --output /dev/null --write-out '%{http_code}' 'https://pje.cloud.tjpe.jus.br/' || true)"
             
             echo "probe attempt ${attempt}: http_code=${code}"
             
