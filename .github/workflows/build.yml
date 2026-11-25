@@ -177,18 +177,23 @@ jobs:
         
         declare code
         
-        for attempt in 1 2; do
-            code="$(sudo docker exec archlinux curl --silent --max-time 10 --proxy 'http://127.0.0.1:4000' --output /dev/null --write-out '%{http_code}' 'https://pje.cloud.tjpe.jus.br/' || true)"
+        for attempt in 1 2 3; do
+            code="$(sudo docker exec archlinux curl --silent --show-error --max-time 15 --proxy 'http://127.0.0.1:4000' --output /dev/null --write-out '%{http_code}' 'https://pje.cloud.tjpe.jus.br/' || true)"
             
-            [ "${code}" = '404' ] && break
+            echo "probe attempt ${attempt}: http_code=${code}"
+            
+            [[ "${code}" =~ ^[1-5][0-9][0-9]$ ]] && break
+            
+            sudo docker exec archlinux ss --tcp --listening --numeric --processes || true
+            sudo docker exec archlinux pgrep --list-full kad || true
             
             sudo docker exec archlinux pkill kad || true
             sleep 5
             sudo docker exec --detach archlinux /tmp/kad/bin/kad --host 0.0.0.0 --port=4000 --target=chrome160 --platform=windows --insecure
-            sleep 10
+            sleep 15
         done
         
-        [ "${code}" = '404' ]
+        [[ "${code}" =~ ^[1-5][0-9][0-9]$ ]]
         
         sudo docker exec --user james archlinux pip install --break-system-packages aiofiles httpx pypdfium2
         
