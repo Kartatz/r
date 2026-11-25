@@ -7,30 +7,6 @@ jobs:
   build:
     runs-on: ubuntu-26.04
     timeout-minutes: 355
-    strategy:
-      matrix:
-        target: [
-          47580,
-          47581,
-          47582,
-          47583,
-          47584,
-          47585,
-          47586,
-          47587,
-          47588,
-          47589,
-          47590,
-          47591,
-          47592,
-          47593,
-          47594,
-          47595,
-          47596,
-          47597,
-          47598,
-          47599
-        ]
     steps:
     - uses: actions/checkout@main
     - name: Set deadline
@@ -180,25 +156,7 @@ jobs:
             -o 'PermitEmptyPasswords=no' \
             -o 'ClientAliveInterval=5' \
             -o 'ClientAliveCountMax=3'
-    - name: Tunnel
-      if: matrix.target != 47580
-      env:
-        SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-        SSH_SERVER: ${{ secrets.SSH_SERVER }}
-      run: |
-        while true; do
-            ssh \
-                -N \
-                -q \
-                -o 'UserKnownHostsFile=/dev/null' \
-                -o 'StrictHostKeyChecking=no' \
-                -o 'ServerAliveInterval=5' \
-                -i './id_rsa' \
-                -R '0.0.0.0:${{ matrix.target }}:127.0.0.1:4000' \
-                "${SSH_USERNAME}@${SSH_SERVER}" || true
-        done
     - name: Scrape and backup
-      if: matrix.target == 47580
       env:
         SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
         SSH_SERVER: ${{ secrets.SSH_SERVER }}
