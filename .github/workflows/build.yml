@@ -132,52 +132,8 @@ jobs:
       run: |
         dpkg-query -W -f '${Package}\n' | grep -E '^(docker|containerd)' | xargs -r sudo apt-mark manual
         ( curl 'https://raw.githubusercontent.com/AmanoTeam/gha-free-space/refs/heads/master/main.sh' -sSf | sed -E '/(docker|container)/d' | bash && sudo rm -rf '/usr/share' '/usr/src' ) &
-    - name: Prepare SSH
-      env:
-        SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-        SSH_SERVER: ${{ secrets.SSH_SERVER }}
-        SSH_KEY: ${{ secrets.SSH_KEY }}
-        SSH_PASSWORD: ${{ secrets.SSH_PASSWORD }}
-      run: |
-        echo "${SSH_KEY}" > './id_rsa'
-        
-        chmod 600 './id_rsa'
-        
-        sudo docker exec archlinux pacman --sync --noconfirm openssh
-        sudo docker exec archlinux ssh-keygen -A
-        
-        echo "root:${SSH_PASSWORD}" | sudo docker exec --interactive archlinux chpasswd
-        echo "james:${SSH_PASSWORD}" | sudo docker exec --interactive archlinux chpasswd
-        
-        sudo docker exec archlinux /usr/bin/sshd \
-            -o 'StrictModes=no' \
-            -o 'GatewayPorts=no' \
-            -o 'ListenAddress=0.0.0.0' \
-            -o 'Port=22' \
-            -o 'PasswordAuthentication=yes' \
-            -o 'PermitRootLogin=yes' \
-            -o 'PermitEmptyPasswords=no' \
-            -o 'ClientAliveInterval=5' \
-            -o 'ClientAliveCountMax=3'
     - name: Scrape and backup
-      env:
-        SSH_USERNAME: ${{ secrets.SSH_USERNAME }}
-        SSH_SERVER: ${{ secrets.SSH_SERVER }}
       run: |
-        (
-            while true; do
-                ssh \
-                    -N \
-                    -q \
-                    -o 'UserKnownHostsFile=/dev/null' \
-                    -o 'StrictHostKeyChecking=no' \
-                    -o 'ServerAliveInterval=5' \
-                    -i './id_rsa' \
-                    -R '0.0.0.0:47580:127.0.0.1:30000' \
-                    "${SSH_USERNAME}@${SSH_SERVER}" || true
-            done
-        ) > '/tmp/ssh.log' 2>&1 &
-        
         declare code
         
         for attempt in 1 2 3; do
@@ -218,9 +174,7 @@ jobs:
         
         (( budget >= 600 )) || budget=600
         
-        sudo docker exec --user james archlinux timeout --signal='TERM' "${budget}" python3 '/home/james/pje-gather/pje_gather.py' --end 160000000 --concurrency 256 --mapping --out '/home/james/pje_enum' > '/tmp/scrape.log' 2>&1 || true
-        
-        tail --lines=5 '/tmp/scrape.log' || true
+        sudo docker exec --interactive --user james archlinux timeout --signal='TERM' "${budget}" python3 -u '/home/james/pje-gather/pje_gather.py' --end 160000000 --concurrency 256 --mapping --out '/home/james/pje_enum' || true
         
         declare delta="mapping_delta_$(date --utc '+%Y%m%dT%H%M%SZ').jsonl"
         
