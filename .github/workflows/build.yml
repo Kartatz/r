@@ -160,9 +160,19 @@ jobs:
         
         sudo docker exec --user james archlinux mkdir --parents '/home/james/pje_enum'
         
-        sudo docker exec --user james archlinux gh release download 'mapping-snapshot-1M' --repo 'Kartatz/pje-gather' --dir '/home/james/pje_enum' --clobber
+        for pattern in 'current.txt' 'last_id.txt' 'done.txt'; do
+            sudo docker exec --user james archlinux gh release download 'mapping-snapshot-1M' --repo 'Kartatz/pje-gather' --dir '/home/james/pje_enum' --pattern "${pattern}" --clobber || true
+        done
         
-        sudo docker exec --user james archlinux sh -c 'if [ -f "/home/james/pje_enum/mapping_snapshot.json" ]; then mv "/home/james/pje_enum/mapping_snapshot.json" "/home/james/pje_enum/mapping.json"; fi'
+        declare snapshot='mapping_snapshot.json'
+        
+        if sudo docker exec --user james archlinux test -f '/home/james/pje_enum/current.txt'; then
+            snapshot="$(sudo docker exec --user james archlinux cat '/home/james/pje_enum/current.txt' | tr -d '[:space:]')"
+        fi
+        
+        sudo docker exec --user james archlinux gh release download 'mapping-snapshot-1M' --repo 'Kartatz/pje-gather' --dir '/home/james/pje_enum' --pattern "${snapshot}" --clobber || true
+        
+        sudo docker exec --user james archlinux sh -c "if [ -f '/home/james/pje_enum/${snapshot}' ]; then mv '/home/james/pje_enum/${snapshot}' '/home/james/pje_enum/mapping.json'; fi"
         
         declare base=0
         
@@ -213,18 +223,41 @@ jobs:
         set -e
         
         delta="$1"
-        upload=''
+        snapshot='mapping_snapshot.json'
         
-        if [ -f 'mapping_snapshot.json' ] && [ "$(stat --format='%s' 'mapping_snapshot.json')" -le 1900000000 ]; then
-            upload='mapping_snapshot.json'
+        if [ -f 'current.txt' ]; then snapshot="$(tr -d '[:space:]' < 'current.txt')"; fi
+        
+        critical=''
+        
+        if [ -f 'last_id.txt' ]; then critical="${critical} last_id.txt"; fi
+        if [ -f 'done.txt' ]; then critical="${critical} done.txt"; fi
+        if [ -f "${delta}" ]; then critical="${critical} ${delta}"; fi
+        
+        if [ -n "${critical}" ]; then
+            gh release upload 'mapping-snapshot-1M' ${critical} --clobber --repo 'Kartatz/pje-gather'
         fi
         
-        if [ -f 'last_id.txt' ]; then upload="${upload} last_id.txt"; fi
-        if [ -f 'done.txt' ]; then upload="${upload} done.txt"; fi
-        if [ -f "${delta}" ]; then upload="${upload} ${delta}"; fi
-        
-        if [ -n "${upload}" ]; then
-            gh release upload 'mapping-snapshot-1M' ${upload} --clobber --repo 'Kartatz/pje-gather'
+        if [ -f 'mapping_snapshot.json' ]; then
+            cp 'mapping_snapshot.json' "${snapshot}"
+            
+            size="$(stat --format='%s' "${snapshot}")"
+            
+            gh release upload 'mapping-snapshot-1M' "${snapshot}" --clobber --repo 'Kartatz/pje-gather' || true
+            
+            if [ "${size}" -gt 1900000000 ]; then
+                case "${snapshot}" in
+                    mapping_snapshot_[0-9]*.json) number="${snapshot#mapping_snapshot_}"; number="${number%.json}" ;;
+                    *) number='1' ;;
+                esac
+                
+                case "${number}" in ''|*[!0-9]*) number='1' ;; esac
+                
+                printf '%s\n' "mapping_snapshot_$(( number + 1 )).json" > 'current.txt'
+            elif [ ! -f 'current.txt' ]; then
+                printf '%s\n' "${snapshot}" > 'current.txt'
+            fi
+            
+            gh release upload 'mapping-snapshot-1M' 'current.txt' --clobber --repo 'Kartatz/pje-gather'
         fi
         SH
     - name: Dispatch next run
