@@ -184,7 +184,18 @@ jobs:
         
         (( budget >= 600 )) || budget=600
         
-        sudo docker exec --interactive --user james archlinux timeout --signal='TERM' "${budget}" python3 -u '/home/james/pje-gather/pje_gather.py' --end 160000000 --concurrency 256 --mapping --out '/home/james/pje_enum' || true
+        declare resume=''
+        
+        if ! sudo docker exec --user james archlinux test -s '/home/james/pje_enum/last_id.txt'; then
+            if sudo docker exec --user james archlinux test -s '/home/james/pje_enum/done.txt'; then
+                resume="--start $(sudo docker exec --user james archlinux awk 'BEGIN { m = 0 } $1 > m { m = $1 } END { print m + 1 }' '/home/james/pje_enum/done.txt')"
+            else
+                echo '::error::no last_id.txt or done.txt to resume from'
+                exit 1
+            fi
+        fi
+        
+        sudo docker exec --interactive --user james archlinux timeout --signal='TERM' "${budget}" python3 -u '/home/james/pje-gather/pje_gather.py' ${resume} --end 160000000 --concurrency 256 --mapping --out '/home/james/pje_enum' || true
         
         declare delta="mapping_delta_$(date --utc '+%Y%m%dT%H%M%SZ').jsonl"
         
@@ -229,15 +240,15 @@ jobs:
         
         critical=''
         
-        if [ -f 'last_id.txt' ]; then critical="${critical} last_id.txt"; fi
-        if [ -f 'done.txt' ]; then critical="${critical} done.txt"; fi
-        if [ -f "${delta}" ]; then critical="${critical} ${delta}"; fi
+        if [ -s 'last_id.txt' ]; then critical="${critical} last_id.txt"; fi
+        if [ -s 'done.txt' ]; then critical="${critical} done.txt"; fi
+        if [ -s "${delta}" ]; then critical="${critical} ${delta}"; fi
         
         if [ -n "${critical}" ]; then
             gh release upload 'mapping-snapshot-1M' ${critical} --clobber --repo 'Kartatz/pje-gather'
         fi
         
-        if [ -f 'mapping_snapshot.json' ]; then
+        if [ -s 'mapping_snapshot.json' ]; then
             if [ "${snapshot}" != 'mapping_snapshot.json' ]; then
                 cp 'mapping_snapshot.json' "${snapshot}"
             fi
