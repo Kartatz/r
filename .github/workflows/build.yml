@@ -238,7 +238,9 @@ jobs:
         fi
         
         if [ -f 'mapping_snapshot.json' ]; then
-            cp 'mapping_snapshot.json' "${snapshot}"
+            if [ "${snapshot}" != 'mapping_snapshot.json' ]; then
+                cp 'mapping_snapshot.json' "${snapshot}"
+            fi
             
             size="$(stat --format='%s' "${snapshot}")"
             
